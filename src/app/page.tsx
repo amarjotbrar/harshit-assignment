@@ -1,103 +1,129 @@
-import Image from "next/image";
+'use client';
+//modules
+import { useState, useEffect } from 'react';
+import { AnimatePresence } from 'framer-motion';
+//components
+import IntroductionPhase from '@/components/IntroductionPhase';
+// import GameplayPhase from '@/components/GameplayPhase';
+// import ResultsPhase from '@/components/ResultsPhase';
+//utils
+import { extractCharacters } from '@/utils/gameplay';
+//types
+import { Character } from '@/types/character';
+import { TranscriptItem } from '@/types/transcript';
+//services
+import transcriptService from '@/services/transcriptService';
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [phase, setPhase] = useState<'loading' | 'introduction' | 'gameplay' | 'results'>('loading');
+  const [characters, setCharacters] = useState<Character[]>([]);
+  const [gameplayTranscript, setGameplayTranscript] = useState<TranscriptItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+  // Fetch data on mount
+  useEffect(() => {
+    (async () => {
+      try {
+        setLoading(true);
+        const {data: transcript} = await transcriptService.getTranscript();
+        
+        if (transcript.length === 0) {
+          throw new Error('Failed to fetch transcript data');
+        }
+        
+        const extractedCharacters = extractCharacters(transcript);
+
+        const startIndex = transcript.findIndex(item => item.id === 1167);
+        const gameTranscript = startIndex !== -1 ? transcript.slice(startIndex) : [];
+        
+        setCharacters(extractedCharacters);
+        setGameplayTranscript(gameTranscript);
+        setPhase('introduction');
+      } catch (err) {
+        console.error('Error setting up game:', err);
+        setError('Failed to load game data. Please try again later.');
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, []);
+
+  console.log(gameplayTranscript);/////////////////////////////////////////////////Need to remove this
+
+  // Handle phase transitions
+  const handleIntroductionComplete = () => {
+    setPhase('gameplay');
+  };
+
+  // const handleGameplayComplete = () => {
+  //   setPhase('results');
+  // };
+
+  // const handleRestart = () => {
+  //   // Reset character states
+  //   setCharacters(prevCharacters => 
+  //     prevCharacters.map(char => ({ ...char, isAlive: true }))
+  //   );
+  //   setPhase('introduction');
+  // };
+
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white">
+        <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-blue-500 mb-4"></div>
+        <p>Loading game data...</p>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white">
+        <div className="bg-red-900/30 p-6 rounded-lg border border-red-600 max-w-md">
+          <h2 className="text-xl font-bold mb-2">Error</h2>
+          <p>{error}</p>
+          <button 
+            onClick={() => window.location.reload()}
+            className="mt-4 px-4 py-2 bg-red-600 rounded hover:bg-red-700 transition-colors"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+            Retry
+          </button>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
+      </div>
+    );
+  }
+
+  return (
+    <main className="min-h-screen bg-gray-900">
+      <AnimatePresence mode="wait">
+        {phase === 'introduction' && (
+          <IntroductionPhase 
+            key="introduction"
+            characters={characters}
+            onComplete={handleIntroductionComplete}
           />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
+        )}
+        
+        {/* {phase === 'gameplay' && (
+          <GameplayPhase 
+            key="gameplay"
+            characters={characters}
+            gameplayTranscript={gameplayTranscript}
+            onComplete={handleGameplayComplete}
           />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
+        )}
+        
+        {phase === 'results' && (
+          <ResultsPhase 
+            key="results"
+            characters={characters}
+            onRestart={handleRestart}
           />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+        )} */}
+      </AnimatePresence>
+    </main>
   );
 }
