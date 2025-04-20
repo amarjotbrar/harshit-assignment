@@ -73,15 +73,17 @@ const IntroductionPhase = (props: IntroductionPhaseProps) => {
           {/* Pixelated overlay effect */}
           <div className="pixelated-overlay"></div>
           <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-black/70">
-            <h1 className="mb-8 text-5xl font-bold text-green-500">Glass Bridge Challenge</h1>
-            <p className="mb-8 max-w-md px-4 text-center text-green-400">
+            <h1 className="mb-8 text-5xl font-bold text-[var(--neon-green)]">
+              Glass Bridge Challenge
+            </h1>
+            <p className="mb-8 max-w-md px-4 text-center text-[var(--neon-green)]">
               Choose the correct glass tile to cross the bridge. One tile is tempered and will hold
               your weight, the other will break. Use arrow keys or click to select.
             </p>
             {currentCharacterIndex === characters.length - 1 && (
               <button
                 onClick={onNextPhase}
-                className="rounded-md bg-green-500 px-8 py-4 text-xl font-bold text-black transition-colors hover:bg-green-400"
+                className="rounded-md bg-[var(--neon-green)] px-8 py-4 text-xl font-bold text-black transition-colors hover:bg-[var(--neon-green-hover)]"
               >
                 Start Game
               </button>

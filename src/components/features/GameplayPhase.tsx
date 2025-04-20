@@ -95,8 +95,8 @@ const GameplayPhase = (props: GameplayPhaseProps) => {
       </div>
 
       {/* Dialogue Section */}
-      <div className="flex rounded-lg border border-[var(--neon-green)] p-8">
-        {/* Character Avatar
+      {/* <div className="flex rounded-lg border border-[var(--neon-green)] p-8"> */}
+      {/* Character Avatar
         <Image
           src={CHARACTER_AVATAR_MAP[currentCharacter.name]}
           alt={currentCharacter.name}
@@ -108,7 +108,7 @@ const GameplayPhase = (props: GameplayPhaseProps) => {
           <br />
           <p className="font-['Press_Start_2P'] text-xs">{currentCharacter.introduction}</p>
         </div> */}
-      </div>
+      {/* </div> */}
     </div>
   );
 };

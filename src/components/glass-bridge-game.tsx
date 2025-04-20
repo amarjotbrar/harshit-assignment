@@ -253,17 +253,6 @@ export default function GlassBridgeGame(props: GlassBridgeGameProps) {
       {/* Pixelated overlay effect */}
       <div className="pixelated-overlay"></div>
 
-      <div className="absolute top-4 right-4 left-4 z-10 flex items-center justify-between">
-        <div className="text-xl text-green-500">
-          <span className="font-bold">Score: </span>
-          <span>{score}</span>
-        </div>
-        <div className="text-xl text-green-500">
-          <span className="font-bold">Best: </span>
-          <span>{maxScore}</span>
-        </div>
-      </div>
-
       <div className="absolute top-60 right-0 bottom-0 left-20 grid max-w-[250px] grid-cols-3 overflow-hidden">
         {Object.keys(characterPositions).map(
           (character) =>
