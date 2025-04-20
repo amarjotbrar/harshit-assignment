@@ -12,9 +12,9 @@ import PauseIcon from '@/assets/pause.svg';
 
 interface TitleBarProps {
   onRewind: () => void;
-  onPreviousCharacter: () => void;
+  onPreviousStep: () => void;
   onPlayToggle: () => void;
-  onNextCharacter: () => void;
+  onNextStep: () => void;
   onFastForward: () => void;
   onMuteToggle: () => void;
   isMuted: boolean;
@@ -24,9 +24,9 @@ interface TitleBarProps {
 const TitleBar = (props: TitleBarProps) => {
   const {
     onRewind,
-    onPreviousCharacter,
+    onPreviousStep,
     onPlayToggle,
-    onNextCharacter,
+    onNextStep,
     onFastForward,
     onMuteToggle,
     isMuted,
@@ -45,13 +45,13 @@ const TitleBar = (props: TitleBarProps) => {
         <button className="rotate-180 cursor-pointer" onClick={onRewind}>
           <Image src={FastForwardIcon} alt="Fast Forward" height={26} />
         </button>
-        <button className="rotate-180 cursor-pointer" onClick={onPreviousCharacter}>
+        <button className="rotate-180 cursor-pointer" onClick={onPreviousStep}>
           <Image src={ForwardIcon} alt="Forward" height={26} />
         </button>
         <button className="cursor-pointer" onClick={onPlayToggle}>
           <Image src={isPlaying ? PauseIcon : PlayIcon} alt="Play" height={26} />
         </button>
-        <button className="cursor-pointer" onClick={onNextCharacter}>
+        <button className="cursor-pointer" onClick={onNextStep}>
           <Image src={ForwardIcon} alt="Forward" height={26} />
         </button>
         <button className="cursor-pointer" onClick={onFastForward}>

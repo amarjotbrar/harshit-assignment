@@ -1,35 +1,42 @@
-"use client"
+'use client';
 
-import { forwardRef } from "react"
-import { cn } from "../lib/utils"
+import { cn } from '../lib/utils';
 
 interface GlassTileProps {
-  status: "unselected" | "correct" | "wrong" | "current"
-  isBreaking: boolean
+  status: 'unselected' | 'correct' | 'wrong' | 'current';
+  isBreaking: boolean;
+  characterImages: React.ReactNode[];
+  ref: React.RefObject<HTMLDivElement | null>;
   // onClick: () => void
 }
 
-const GlassTile = forwardRef<HTMLDivElement, GlassTileProps>(({ status, isBreaking }, ref) => {
+const GlassTile = (props: GlassTileProps) => {
+  const { status, isBreaking, characterImages, ref } = props;
   return (
     <div
       ref={ref}
       // onClick={onClick}
       className={cn(
-        "glass-tile",
-        status === "unselected" && "glass-tile-unselected",
-        status === "current" && "glass-tile-current",
-        status === "correct" && "glass-tile-correct",
-        status === "wrong" && "glass-tile-wrong",
-        isBreaking && "glass-tile-breaking",
+        'glass-tile',
+        status === 'unselected' && 'glass-tile-unselected',
+        status === 'current' && 'glass-tile-current',
+        status === 'correct' && 'glass-tile-correct',
+        status === 'wrong' && 'glass-tile-wrong',
+        isBreaking && 'glass-tile-breaking'
       )}
     >
+      {characterImages.map((characterImage, index) => (
+        <div key={`character-image-${index}`} className="absolute top-0 left-0">
+          {characterImage}
+        </div>
+      ))}
       <div className="glass-tile-inner">
         <div className="glass-tile-reflection"></div>
       </div>
     </div>
-  )
-})
+  );
+};
 
-GlassTile.displayName = "GlassTile"
+GlassTile.displayName = 'GlassTile';
 
-export default GlassTile
+export default GlassTile;

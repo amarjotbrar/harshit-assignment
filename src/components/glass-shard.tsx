@@ -1,12 +1,12 @@
-"use client"
+'use client';
 
 interface GlassShardProps {
-  width: number
-  height: number
-  rotation: number
-  left: number
-  top: number
-  delay: number
+  width: number;
+  height: number;
+  rotation: number;
+  left: number;
+  top: number;
+  delay: number;
 }
 
 export default function GlassShard({ width, height, rotation, left, top, delay }: GlassShardProps) {
@@ -23,5 +23,5 @@ export default function GlassShard({ width, height, rotation, left, top, delay }
         transition: `transform 1s ease-out ${delay}s, opacity 1.5s ease-out ${delay + 0.5}s, top 1s ease-out ${delay}s, left 1s ease-out ${delay}s`,
       }}
     />
-  )
+  );
 }

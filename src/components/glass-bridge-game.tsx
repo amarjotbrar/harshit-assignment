@@ -1,94 +1,127 @@
-"use client"
+'use client';
 
-import React from "react"
+import React from 'react';
 
-import { useEffect, useState } from "react"
-import GameOverModal from "./game-over-modal"
+import { useEffect, useState } from 'react';
+import GameOverModal from './game-over-modal';
 
-import VictoryModal from "./victory-modal"
-import GlassTile from "./glass-tile"
+import VictoryModal from './victory-modal';
+import GlassTile from './glass-tile';
+import { GamePlayStep } from '@/types/transcript';
+import Image from 'next/image';
+import { CHARACTER_AVATAR_MAP } from '@/constants/character';
 
-type TileStatus = "unselected" | "correct" | "wrong" | "current"
+type TileStatus = 'unselected' | 'correct' | 'wrong' | 'current';
 
 interface Tile {
-  id: number
-  position: "left" | "right"
-  isTempered: boolean
-  status: TileStatus
-  ref: React.RefObject<HTMLDivElement | null>
+  id: number;
+  position: 'left' | 'right';
+  isTempered: boolean;
+  status: TileStatus;
+  ref: React.RefObject<HTMLDivElement | null>;
 }
 
 interface ShardProps {
-  width: number
-  height: number
-  rotation: number
-  left: number
-  top: number
-  delay: number
+  width: number;
+  height: number;
+  rotation: number;
+  left: number;
+  top: number;
+  delay: number;
 }
 
-export default function GlassBridgeGame() {
-  const [gameStarted, setGameStarted] = useState(false)
-  const [currentPairIndex, setCurrentPairIndex] = useState(0)
-  const [gameOver, setGameOver] = useState(false)
-  const [victory, setVictory] = useState(false)
-  const [tiles, setTiles] = useState<Tile[]>([])
-  const [score, setScore] = useState(0)
-  const [maxScore, setMaxScore] = useState(0)
-  const [breakingTileId, setBreakingTileId] = useState<number | null>(null)
-  const [showShards, setShowShards] = useState(false)
-  const [shards, setShards] = useState<ShardProps[]>([])
-  const [breakPosition, setBreakPosition] = useState({ left: 0, top: 0 })
+type GlassBridgeGameProps = {
+  currentStepIndex: number;
+  gamePlaySteps: GamePlayStep[];
+  characterPositions: Record<string, { position: number; direction: 'left' | 'right' }>;
+};
 
-  const TOTAL_PAIRS = 8
+const CharacterImage = (props: { character: string }) => {
+  const { character } = props;
+  return (
+    <Image
+      src={CHARACTER_AVATAR_MAP[character]}
+      alt={character}
+      className="mr-8 max-h-18 w-18 rounded-lg border border-[var(--neon-green)] p-2"
+    />
+  );
+};
+
+export default function GlassBridgeGame(props: GlassBridgeGameProps) {
+  const { characterPositions: characterPositionsInitial } = props;
+  const [gameStarted, setGameStarted] = useState(true);
+  const [currentPairIndex, setCurrentPairIndex] = useState(0);
+  const [gameOver, setGameOver] = useState(false);
+  const [victory, setVictory] = useState(false);
+  const [tiles, setTiles] = useState<Tile[]>([]);
+  const [score, setScore] = useState(0);
+  const [maxScore, setMaxScore] = useState(0);
+  const [breakingTileId, setBreakingTileId] = useState<number | null>(null);
+  const [showShards, setShowShards] = useState(false);
+  const [shards, setShards] = useState<ShardProps[]>([]);
+  const [breakPosition, setBreakPosition] = useState({ left: 0, top: 0 });
+  const [characterPositions, setCharacterPositions] = useState(characterPositionsInitial);
+
+  const TOTAL_PAIRS = 8;
 
   // Initialize the game
   const initializeGame = () => {
-    const newTiles: Tile[] = []
+    const newTiles: Tile[] = [];
 
     for (let i = 0; i < TOTAL_PAIRS; i++) {
       // Randomly decide which tile is tempered (safe)
-      const isLeftTempered = Math.random() > 0.5
+      const isLeftTempered = Math.random() > 0.5;
 
       newTiles.push({
         id: i * 2,
-        position: "left",
+        position: 'left',
         isTempered: isLeftTempered,
-        status: i === 0 ? "current" : "unselected",
+        status: i === 0 ? 'current' : 'unselected',
         ref: React.createRef<HTMLDivElement>(),
-      })
+      });
 
       newTiles.push({
         id: i * 2 + 1,
-        position: "right",
+        position: 'right',
         isTempered: !isLeftTempered,
-        status: i === 0 ? "current" : "unselected",
+        status: i === 0 ? 'current' : 'unselected',
         ref: React.createRef<HTMLDivElement>(),
-      })
+      });
     }
 
-    setTiles(newTiles)
-    setCurrentPairIndex(0)
-    setGameOver(false)
-    setVictory(false)
-    setScore(0)
-    setGameStarted(true)
-    setBreakingTileId(null)
-    setShowShards(false)
-    setShards([])
-  }
+    setTiles(newTiles);
+    setCurrentPairIndex(0);
+    setGameOver(false);
+    setVictory(false);
+    setScore(0);
+    setGameStarted(true);
+    setBreakingTileId(null);
+    setShowShards(false);
+    setShards([]);
+  };
+
+  React.useEffect(() => {
+    initializeGame();
+  }, []);
+
+  React.useEffect(() => {
+    setCharacterPositions(characterPositionsInitial);
+  }, [characterPositionsInitial]);
 
   // Generate glass shards exactly like in the reference image
   const generateShards = (tileElement: HTMLDivElement) => {
     // Get the position of the breaking tile
-    const rect = tileElement.getBoundingClientRect()
-    const containerRect = tileElement.parentElement?.parentElement?.getBoundingClientRect() || { left: 0, top: 0 }
+    const rect = tileElement.getBoundingClientRect();
+    const containerRect = tileElement.parentElement?.parentElement?.getBoundingClientRect() || {
+      left: 0,
+      top: 0,
+    };
 
     // Calculate position relative to the bridge container
-    const left = rect.left - containerRect.left + rect.width / 2
-    const top = rect.top - containerRect.top + rect.height / 2 + 50 // Offset to position below the tile
+    const left = rect.left - containerRect.left + rect.width / 2;
+    const top = rect.top - containerRect.top + rect.height / 2 + 50; // Offset to position below the tile
 
-    setBreakPosition({ left, top })
+    setBreakPosition({ left, top });
 
     // Create shards that match the reference image exactly
     const newShards: ShardProps[] = [
@@ -115,204 +148,229 @@ export default function GlassBridgeGame() {
       { width: 9, height: 14, rotation: 330, left: -40, top: 80, delay: 0.65 },
       { width: 11, height: 16, rotation: 15, left: 40, top: 50, delay: 0.7 },
       { width: 13, height: 19, rotation: 75, left: -15, top: 90, delay: 0.75 },
-    ]
+    ];
 
-    setShards(newShards)
-  }
+    setShards(newShards);
+  };
 
   // Handle tile selection
   const handleTileClick = (tileId: number) => {
-    if (gameOver || victory || breakingTileId !== null) return
+    if (gameOver || victory || breakingTileId !== null) return;
 
-    const clickedTile = tiles.find((tile) => tile.id === tileId)
-    if (!clickedTile || clickedTile.status !== "current") return
+    const clickedTile = tiles.find((tile) => tile.id === tileId);
+    if (!clickedTile || clickedTile.status !== 'current') return;
 
-    const updatedTiles = [...tiles]
-    const clickedTileIndex = updatedTiles.findIndex((tile) => tile.id === tileId)
+    const updatedTiles = [...tiles];
+    const clickedTileIndex = updatedTiles.findIndex((tile) => tile.id === tileId);
 
     if (clickedTile.isTempered) {
       // Correct tile selected
-      updatedTiles[clickedTileIndex].status = "correct"
+      updatedTiles[clickedTileIndex].status = 'correct';
 
       // Update the next pair to be current if not the last pair
       if (currentPairIndex < TOTAL_PAIRS - 1) {
-        updatedTiles[2 * (currentPairIndex + 1)].status = "current"
-        updatedTiles[2 * (currentPairIndex + 1) + 1].status = "current"
-        setCurrentPairIndex(currentPairIndex + 1)
+        updatedTiles[2 * (currentPairIndex + 1)].status = 'current';
+        updatedTiles[2 * (currentPairIndex + 1) + 1].status = 'current';
+        setCurrentPairIndex(currentPairIndex + 1);
       } else {
         // Player has completed all pairs
-        setVictory(true)
+        setVictory(true);
       }
 
-      setScore(score + 1)
+      setScore(score + 1);
       if (score + 1 > maxScore) {
-        setMaxScore(score + 1)
+        setMaxScore(score + 1);
       }
     } else {
       // Wrong tile selected
-      updatedTiles[clickedTileIndex].status = "wrong"
-      setBreakingTileId(tileId)
+      updatedTiles[clickedTileIndex].status = 'wrong';
+      setBreakingTileId(tileId);
 
       // Generate and show shards
       if (clickedTile.ref.current) {
-        generateShards(clickedTile.ref.current)
+        generateShards(clickedTile.ref.current);
       }
 
       // Show breaking animation
       setTimeout(() => {
-        setShowShards(true)
+        setShowShards(true);
 
         // After animation, set game over
         setTimeout(() => {
-          setGameOver(true)
-        }, 2000)
-      }, 300)
+          setGameOver(true);
+        }, 2000);
+      }, 300);
 
       // Also reveal the correct tile in the pair
       const otherTileInPair = updatedTiles.find(
-        (tile) => tile.id !== tileId && Math.floor(tile.id / 2) === Math.floor(tileId / 2),
-      )
+        (tile) => tile.id !== tileId && Math.floor(tile.id / 2) === Math.floor(tileId / 2)
+      );
       if (otherTileInPair) {
-        const otherTileIndex = updatedTiles.findIndex((tile) => tile.id === otherTileInPair.id)
-        updatedTiles[otherTileIndex].status = "correct"
+        const otherTileIndex = updatedTiles.findIndex((tile) => tile.id === otherTileInPair.id);
+        updatedTiles[otherTileIndex].status = 'correct';
       }
     }
 
-    setTiles(updatedTiles)
-  }
+    setTiles(updatedTiles);
+  };
 
   // Handle keyboard controls
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (!gameStarted || gameOver || victory || breakingTileId !== null) return
+      if (!gameStarted || gameOver || victory || breakingTileId !== null) return;
 
-      if (e.key === "ArrowLeft") {
-        const leftTile = tiles.find((tile) => tile.position === "left" && Math.floor(tile.id / 2) === currentPairIndex)
-        if (leftTile) handleTileClick(leftTile.id)
-      } else if (e.key === "ArrowRight") {
+      if (e.key === 'ArrowLeft') {
+        const leftTile = tiles.find(
+          (tile) => tile.position === 'left' && Math.floor(tile.id / 2) === currentPairIndex
+        );
+        if (leftTile) handleTileClick(leftTile.id);
+      } else if (e.key === 'ArrowRight') {
         const rightTile = tiles.find(
-          (tile) => tile.position === "right" && Math.floor(tile.id / 2) === currentPairIndex,
-        )
-        if (rightTile) handleTileClick(rightTile.id)
+          (tile) => tile.position === 'right' && Math.floor(tile.id / 2) === currentPairIndex
+        );
+        if (rightTile) handleTileClick(rightTile.id);
       }
-    }
+    };
 
-    window.addEventListener("keydown", handleKeyDown)
-    return () => window.removeEventListener("keydown", handleKeyDown)
-  }, [tiles, currentPairIndex, gameStarted, gameOver, victory, breakingTileId])
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tiles, currentPairIndex, gameStarted, gameOver, victory, breakingTileId]);
 
   return (
-    <div className="relative w-full h-screen flex flex-col items-center justify-center overflow-hidden"   
-     style={{
+    <div
+      className="relative flex h-screen w-full flex-col items-center justify-center overflow-hidden"
+      style={{
         backgroundImage: "url('/background.png')",
-        backgroundSize: "cover",  // Ensures the image covers the area without stretching
-        backgroundPosition: "center",  // Keeps the image centered
-        height: "50vh"  // Sets the height of the background image to 50% of the viewport height
-      }}>
+        backgroundSize: 'cover', // Ensures the image covers the area without stretching
+        backgroundPosition: 'center', // Keeps the image centered
+        height: '50vh', // Sets the height of the background image to 50% of the viewport height
+      }}
+    >
       {/* Background image */}
       <div className="game-background"></div>
 
       {/* Pixelated overlay effect */}
       <div className="pixelated-overlay"></div>
 
-      {!gameStarted ? (
-        <div className="absolute inset-0 flex flex-col items-center justify-center z-10 bg-black/70">
-          <h1 className="text-5xl font-bold text-green-500 mb-8">Glass Bridge Challenge</h1>
-          <p className="mb-8 text-center text-green-400 max-w-md px-4">
-            Choose the correct glass tile to cross the bridge. One tile is tempered and will hold your weight, the other
-            will break. Use arrow keys or click to select.
-          </p>
-          <button
-            onClick={initializeGame}
-            className="rounded-md bg-green-500 px-8 py-4 text-xl text-black font-bold hover:bg-green-400 transition-colors"
-          >
-            Start Game
-          </button>
+      <div className="absolute top-4 right-4 left-4 z-10 flex items-center justify-between">
+        <div className="text-xl text-green-500">
+          <span className="font-bold">Score: </span>
+          <span>{score}</span>
         </div>
-      ) : (
-        <>
-          <div className="absolute top-4 left-4 right-4 flex items-center justify-between z-10">
-            <div className="text-green-500 text-xl">
-              <span className="font-bold">Score: </span>
-              <span>{score}</span>
-            </div>
-            <div className="text-green-500 text-xl">
-              <span className="font-bold">Best: </span>
-              <span>{maxScore}</span>
-            </div>
-          </div>
+        <div className="text-xl text-green-500">
+          <span className="font-bold">Best: </span>
+          <span>{maxScore}</span>
+        </div>
+      </div>
 
-          <div className="absolute bottom-[17%] w-full max-w-xl px-4" style={{ transform: 'rotateX(30deg)' }}>
-            <div className="relative">
-              {/* Bridge tiles */}
-              <div className="bridge-container">
-                <div className="bridge-row">
-                  {Array.from({ length: TOTAL_PAIRS }).map((_, pairIndex) => {
-                    const leftTile = tiles.find(
-                      (tile) => tile.position === "left" && Math.floor(tile.id / 2) === pairIndex,
-                    )
-                    return leftTile ? (
-                      <GlassTile
-                        key={`left-${pairIndex}`}
-                        // onClick={() => handleTileClick(leftTile.id)}
-                        status={leftTile.status}
-                        isBreaking={breakingTileId === leftTile.id}
-                        ref={leftTile.ref}
-                      />
-                    ) : null
-                  })}
-                </div>
-                <div className="bridge-row">
-                  {Array.from({ length: TOTAL_PAIRS }).map((_, pairIndex) => {
-                    const rightTile = tiles.find(
-                      (tile) => tile.position === "right" && Math.floor(tile.id / 2) === pairIndex,
-                    )
-                    return rightTile ? (
-                      <GlassTile
-                        key={`right-${pairIndex}`}
-                        // onClick={() => handleTileClick(rightTile.id)}
-                        status={rightTile.status}
-                        isBreaking={breakingTileId === rightTile.id}
-                        ref={rightTile.ref}
-                      />
-                    ) : null
-                  })}
-                </div>
+      <div className="absolute top-60 right-0 bottom-0 left-20 grid max-w-[250px] grid-cols-3 overflow-hidden">
+        {Object.keys(characterPositions).map(
+          (character) =>
+            characterPositions[character].position === 0 && (
+              <CharacterImage key={character} character={character} />
+            )
+        )}
+      </div>
 
-                {/* Glass shards animation */}
-                {showShards && breakingTileId !== null && (
+      <div
+        className="absolute bottom-[17%] w-full max-w-xl px-4"
+        style={{ transform: 'rotateX(30deg)' }}
+      >
+        <div className="relative">
+          {/* Bridge tiles */}
+          <div className="bridge-container">
+            <div className="bridge-row">
+              {Array.from({ length: TOTAL_PAIRS }).map((_, pairIndex) => {
+                const leftTile = tiles.find(
+                  (tile) => tile.position === 'left' && Math.floor(tile.id / 2) === pairIndex
+                );
+                const characterImagesLeft: React.ReactNode[] = [];
+                Object.keys(characterPositions).forEach((character) => {
+                  if (
+                    characterPositions[character].position === pairIndex + 1 &&
+                    characterPositions[character].direction === 'left'
+                  ) {
+                    characterImagesLeft.push(
+                      <CharacterImage key={character} character={character} />
+                    );
+                  }
+                });
+
+                return leftTile ? (
+                  <GlassTile
+                    key={`left-${pairIndex}`}
+                    characterImages={characterImagesLeft}
+                    // onClick={() => handleTileClick(leftTile.id)}
+                    status={leftTile.status}
+                    isBreaking={breakingTileId === leftTile.id}
+                    ref={leftTile.ref}
+                  />
+                ) : null;
+              })}
+            </div>
+            <div className="bridge-row">
+              {Array.from({ length: TOTAL_PAIRS }).map((_, pairIndex) => {
+                const rightTile = tiles.find(
+                  (tile) => tile.position === 'right' && Math.floor(tile.id / 2) === pairIndex
+                );
+                const characterImagesRight: React.ReactNode[] = [];
+                Object.keys(characterPositions).forEach((character) => {
+                  if (
+                    characterPositions[character].position === pairIndex + 1 &&
+                    characterPositions[character].direction === 'right'
+                  ) {
+                    characterImagesRight.push(
+                      <CharacterImage key={character} character={character} />
+                    );
+                  }
+                });
+
+                return rightTile ? (
+                  <GlassTile
+                    key={`right-${pairIndex}`}
+                    // onClick={() => handleTileClick(rightTile.id)}
+                    status={rightTile.status}
+                    isBreaking={breakingTileId === rightTile.id}
+                    ref={rightTile.ref}
+                    characterImages={characterImagesRight}
+                  />
+                ) : null;
+              })}
+            </div>
+
+            {/* Glass shards animation */}
+            {showShards && breakingTileId !== null && (
+              <div
+                className="glass-shards-container"
+                style={{
+                  left: breakPosition.left,
+                  top: breakPosition.top,
+                }}
+              >
+                {shards.map((shard, i) => (
                   <div
-                    className="glass-shards-container"
+                    key={i}
+                    className="glass-shard"
                     style={{
-                      left: breakPosition.left,
-                      top: breakPosition.top,
+                      width: `${shard.width}px`,
+                      height: `${shard.height}px`,
+                      transform: `rotate(${shard.rotation}deg)`,
+                      left: `${shard.left}px`,
+                      top: `${shard.top}px`,
+                      opacity: 1,
+                      transition: `transform 1s ease-out ${shard.delay}s, opacity 1.5s ease-out ${shard.delay + 0.5}s, top 1s ease-out ${shard.delay}s, left 1s ease-out ${shard.delay}s`,
                     }}
-                  >
-                    {shards.map((shard, i) => (
-                      <div
-                        key={i}
-                        className="glass-shard"
-                        style={{
-                          width: `${shard.width}px`,
-                          height: `${shard.height}px`,
-                          transform: `rotate(${shard.rotation}deg)`,
-                          left: `${shard.left}px`,
-                          top: `${shard.top}px`,
-                          opacity: 1,
-                          transition: `transform 1s ease-out ${shard.delay}s, opacity 1.5s ease-out ${shard.delay + 0.5}s, top 1s ease-out ${shard.delay}s, left 1s ease-out ${shard.delay}s`,
-                        }}
-                      />
-                    ))}
-                  </div>
-                )}
+                  />
+                ))}
               </div>
-            </div>
+            )}
           </div>
+        </div>
+      </div>
 
-          {gameOver && <GameOverModal score={score} onRestart={initializeGame} />}
-          {victory && <VictoryModal score={score} onRestart={initializeGame} />}
-        </>
-      )}
+      {gameOver && <GameOverModal score={score} onRestart={initializeGame} />}
+      {victory && <VictoryModal score={score} onRestart={initializeGame} />}
     </div>
-  )
+  );
 }

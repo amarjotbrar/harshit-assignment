@@ -5,11 +5,12 @@
   --foreground: 0 0% 100%;
   --tile-color: #2bff0081;
   --tile-glow: rgba(0, 255, 0, 0.6);
+  --neon-green: #2bff00;
 }
 
 body {
   background-color: hsl(var(--background));
-  color: hsl(var(--foreground));
+  color: var(--neon-green);
   font-family: Arial, Helvetica, sans-serif;
   margin: 0;
   padding: 0;
@@ -52,7 +53,7 @@ body {
   width: 100%;
   height: 100%;
   background-color: var(--tile-color);
-  border: 4px solid #2AFF00;
+  border: 4px solid #2aff00;
   box-shadow: 0 0 10px var(--tile-glow);
   transition: all 0.3s ease;
   z-index: 10;
@@ -130,7 +131,7 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
-  background-image: url("/background.png");
+  background-image: url('/background.png');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;

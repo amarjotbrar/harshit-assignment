@@ -1,4 +1,10 @@
-import { TranscriptItem, GameStateMessageData, IntroductionMessageData } from '@/types/transcript';
+import {
+  TranscriptItem,
+  GameStateMessageData,
+  IntroductionMessageData,
+  GamePlayStep,
+  ResponseMessageData,
+} from '@/types/transcript';
 import { Direction } from '@/types';
 import { Character } from '@/types/character';
 
@@ -43,7 +49,7 @@ export const extractIdAgentMessageData = (data: TranscriptItem[]) => {
   for (const message of data) {
     // Extract relevant fields
     const { id, agent_id, message_data } = message;
-    
+
     // Store only necessary fields: id, agent_id, and message_data
     extractedData.push({
       id,
@@ -54,7 +60,6 @@ export const extractIdAgentMessageData = (data: TranscriptItem[]) => {
 
   return extractedData;
 };
-
 
 // Process the gameplay transcript to determine safe and unsafe tiles
 export const processBridgeTiles = (
@@ -102,4 +107,23 @@ export const processBridgeTiles = (
   });
 
   return { left: leftTiles, right: rightTiles };
+};
+
+export const getGamePlayStepsData = (gameplayTranscript: TranscriptItem[]): GamePlayStep[] => {
+  const stepsData: GamePlayStep[] = [];
+
+  gameplayTranscript.forEach((item) => {
+    if (
+      item.round_number === 2 &&
+      item.agent_id !== 'system' &&
+      item.message_type === 'response' &&
+      item.id >= 1167
+    ) {
+      stepsData.push({
+        agent_id: item.agent_id,
+        message_data: item.message_data as ResponseMessageData,
+      });
+    }
+  });
+  return stepsData;
 };

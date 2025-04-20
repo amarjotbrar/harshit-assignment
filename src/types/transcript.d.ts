@@ -46,4 +46,13 @@ export type PromptMessageData = {
   prompt: string;
 };
 
-export type MessageData = IntroductionMessageData | ResponseMessageData | GameStateMessageData | PromptMessageData;
+export type MessageData =
+  | IntroductionMessageData
+  | ResponseMessageData
+  | GameStateMessageData
+  | PromptMessageData;
+
+export type GamePlayStep = {
+  agent_id: string;
+  message_data: ResponseMessageData;
+};

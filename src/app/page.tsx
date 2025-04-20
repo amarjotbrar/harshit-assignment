@@ -4,14 +4,12 @@ import { useState, useEffect } from 'react';
 import { AnimatePresence } from 'framer-motion';
 //components
 import IntroductionPhase from '@/components/features/IntroductionPhase';
-// import GameplayPhase from '@/components/GameplayPhase';
-// import ResultsPhase from '@/components/ResultsPhase';
+import GameplayPhase from '@/components/features/GameplayPhase';
 //utils
-// import GlassBridgeGame from '@components/glass-bridge-game';
-import { extractCharacters } from '@/utils/gameplay';
+import { extractCharacters, getGamePlayStepsData } from '@/utils/gameplay';
 //types
 import { Character } from '@/types/character';
-import { TranscriptItem } from '@/types/transcript';
+import { GamePlayStep } from '@/types/transcript';
 //services
 import transcriptService from '@/services/transcriptService';
 
@@ -20,7 +18,7 @@ export default function Home() {
     'loading'
   );
   const [characters, setCharacters] = useState<Character[]>([]);
-  const [gameplayTranscript, setGameplayTranscript] = useState<TranscriptItem[]>([]);
+  const [gamePlaySteps, setGameplaySteps] = useState<GamePlayStep[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isMuted, setIsMuted] = useState(false);
@@ -39,11 +37,10 @@ export default function Home() {
 
         const extractedCharacters = extractCharacters(transcript);
 
-        const startIndex = transcript.findIndex((item) => item.id === 1167);
-        const gameTranscript = startIndex !== -1 ? transcript.slice(startIndex) : [];
+        const gameTranscript = getGamePlayStepsData(transcript);
 
         setCharacters(extractedCharacters);
-        setGameplayTranscript(gameTranscript);
+        setGameplaySteps(gameTranscript);
         setPhase('introduction');
       } catch (err) {
         console.error('Error setting up game:', err);
@@ -54,12 +51,10 @@ export default function Home() {
     })();
   }, []);
 
-  console.log(gameplayTranscript); /////////////////////////////////////////////////Need to remove this
-
-  // Handle phase transitions
-  // const handleIntroductionComplete = () => {
-  //   setPhase('gameplay');
-  // };
+  //Handle phase transitions
+  const handleIntroductionComplete = () => {
+    setPhase('gameplay');
+  };
 
   const toggleMute = () => {
     setIsMuted((prevState) => !prevState);
@@ -108,7 +103,17 @@ export default function Home() {
             isPlaying={isPlaying}
             onMuteToggle={toggleMute}
             onPlayToggle={togglePlay}
-            // onComplete={handleIntroductionComplete}
+            onNextPhase={handleIntroductionComplete}
+          />
+        )}
+        {phase === 'gameplay' && (
+          <GameplayPhase
+            gamePlaySteps={gamePlaySteps}
+            characters={characters}
+            isMuted={isMuted}
+            isPlaying={isPlaying}
+            onMuteToggle={toggleMute}
+            onPlayToggle={togglePlay}
           />
         )}
       </AnimatePresence>
