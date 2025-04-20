@@ -3,7 +3,9 @@
 import { useState, useEffect } from 'react';
 import { AnimatePresence } from 'framer-motion';
 //components
-import IntroductionPhase from '@/components/IntroductionPhase';
+import IntroductionPhase from '../components/IntroductionPhase';
+// import GameplayPhase from '@/components/GameplayPhase';
+// import ResultsPhase from '@/components/ResultsPhase';
 //utils
 import { extractCharacters } from '@/utils/gameplay';
 //types
