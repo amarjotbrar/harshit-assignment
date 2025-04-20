@@ -1,10 +1,20 @@
-export const CHARACTER_AVATAR_MAP: Record<string, string> = {
-  Grokonomist: 'some string',
-  Qwenaissance: 'some string',
-  ChadGPT: 'some string',
-  Cluedence: 'some string',
-  DeepShit: 'some string',
-  Geminigma: 'some string',
-  Mistroll: 'some string',
-  Llamarchy: 'some string',
+import { StaticImageData } from 'next/image';
+import Grokonomist from '@/assets/characters/grokonomist.png';
+import Qwenaissance from '@/assets/characters/qwenaissance.png';
+import ChadGPT from '@/assets/characters/chadgpt.png';
+import Cluedence from '@/assets/characters/cluedence.png';
+import DeepShit from '@/assets/characters/deepshit.png';
+import Geminigma from '@/assets/characters/geminigma.png';
+import Mistroll from '@/assets/characters/mistroll.png';
+import Llamarchy from '@/assets/characters/llamarchy.png';
+
+export const CHARACTER_AVATAR_MAP: Record<string, StaticImageData> = {
+  Grokonomist: Grokonomist,
+  Qwenaissance: Qwenaissance,
+  ChadGPT: ChadGPT,
+  Cluedence: Cluedence,
+  DeepShit: DeepShit,
+  Geminigma: Geminigma,
+  Mistroll: Mistroll,
+  Llamarchy: Llamarchy,
 };
