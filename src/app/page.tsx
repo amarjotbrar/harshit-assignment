@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { AnimatePresence } from 'framer-motion';
 //components
-import IntroductionPhase from '../components/IntroductionPhase';
+import IntroductionPhase from '@/components/features/IntroductionPhase';
 // import GameplayPhase from '@/components/GameplayPhase';
 // import ResultsPhase from '@/components/ResultsPhase';
 //utils
@@ -61,12 +61,12 @@ export default function Home() {
   // };
 
   const toggleMute = () => {
-    setIsMuted(prevState => !prevState);
-  }
+    setIsMuted((prevState) => !prevState);
+  };
 
   const togglePlay = () => {
-    setIsPlaying(prevState => !prevState);
-  }
+    setIsPlaying((prevState) => !prevState);
+  };
 
   // Show loading state
   if (loading) {

@@ -11,6 +11,11 @@ export type TranscriptItem = {
 
 export type MessageType = 'response' | 'game_state' | 'prompt';
 
+export type IntroductionMessageData = {
+  introduction: string;
+  agent_name: string;
+};
+
 export type ResponseMessageData = {
   choice: 'left' | 'right';
   reasoning: string;
@@ -41,4 +46,4 @@ export type PromptMessageData = {
   prompt: string;
 };
 
-export type MessageData = ResponseMessageData | GameStateMessageData | PromptMessageData;
+export type MessageData = IntroductionMessageData | ResponseMessageData | GameStateMessageData | PromptMessageData;
