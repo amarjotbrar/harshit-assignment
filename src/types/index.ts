@@ -22,4 +22,4 @@ export interface GameState {
   isAudioPlaying: boolean;
 }
 
-export type Direction = 'left' | 'right'; 
+export type Direction = 'left' | 'right';

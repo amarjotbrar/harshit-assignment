@@ -29,18 +29,20 @@ This application simulates the Glass Bridge Game in two main phases:
 
 ### Prerequisites
 
-- Node.js 18+ 
+- Node.js 18+
 - npm or yarn
 
 ### Installation
 
 1. Clone the repository
+
 ```bash
 git clone <repository-url>
 cd harshit-assignment
 ```
 
 2. Install dependencies
+
 ```bash
 npm install
 # or
@@ -48,6 +50,7 @@ yarn install
 ```
 
 3. Start the development server
+
 ```bash
 npm run dev
 # or
@@ -61,6 +64,7 @@ yarn dev
 To enable the Lemonfox.ai text-to-speech:
 
 1. Add your Lemonfox API key to `.env.local`:
+
 ```
 NEXT_PUBLIC_LEMONFOX_API_KEY=your-api-key-here
 ```

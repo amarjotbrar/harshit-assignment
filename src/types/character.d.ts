@@ -1,6 +1,6 @@
 export interface Character {
-    name: string;
-    introduction: string;
-    avatar: string;
-    isAlive: boolean;
-  }
+  name: string;
+  introduction: string;
+  avatar: string;
+  isAlive: boolean;
+}
