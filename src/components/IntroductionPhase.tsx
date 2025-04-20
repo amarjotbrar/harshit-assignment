@@ -1,111 +1,85 @@
 //modules
-import Image from 'next/image';
-import { motion } from 'framer-motion';
-//hooks 
-import useTTS from '@/hooks/useTTS';
-import { useState, useEffect } from 'react';
+import React from 'react';
+//components
+import TitleBar from './ui/TitleBar';
 //types
-import { Character as CharacterType } from '@/types/character';
+import { Character } from '@/types/character';
 
 interface IntroductionPhaseProps {
-  characters: CharacterType[];
-  onComplete: () => void;
+  characters: Character[];
+  isMuted: boolean;
+  isPlaying: boolean;
+  onMuteToggle: () => void;
+  onPlayToggle: () => void;
 }
 
-const IntroductionPhase = ({ characters, onComplete }: IntroductionPhaseProps) => {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const { speak, isPlaying } = useTTS();
+const IntroductionPhase = (props: IntroductionPhaseProps) => {
+  const { characters, isMuted, isPlaying, onMuteToggle, onPlayToggle } = props;
   
-  const currentCharacter = characters[currentIndex];
-  
-  useEffect(() => {
-    if (currentCharacter) {
-      const introText = `${currentCharacter.name} says: ${currentCharacter.introduction}`;
-      speak(introText);
-    }
-  }, [currentIndex, currentCharacter, speak]);
-  
-  const handleNextCharacter = () => {
-    if (currentIndex < characters.length - 1) {
-      setCurrentIndex(prevIndex => prevIndex + 1);
-    } else {
-      onComplete();
-    }
+  const [currentCharacterIndex, setCurrentCharacterIndex] = React.useState<number>(0);
+
+  const currentCharacter = React.useMemo(
+    () => characters[currentCharacterIndex],
+    [characters, currentCharacterIndex]
+  );
+
+  console.log(characters); /// will remove this, just for testing
+  console.log(currentCharacter); /// will remove this, just for testing
+
+  const onNextCharacter = () => {
+    setCurrentCharacterIndex((prevIndex) => (prevIndex + 1) % characters.length);
   };
-  
+
+  const onPreviousCharacter = () => {
+    setCurrentCharacterIndex(
+      (prevIndex) => (prevIndex - 1 + characters.length) % characters.length
+    );
+  };
+
+  const onFastForward = () => {
+    setCurrentCharacterIndex(characters.length - 1);
+  };
+
+  const onRewind = () => {
+    setCurrentCharacterIndex(0);
+  };
+
   return (
-    <motion.div 
-      className="flex flex-col min-h-screen bg-gray-900 text-white p-4"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-    >
-      <h1 className="text-3xl font-bold mb-10 text-center">Character Introductions</h1>
+    <div className="h-screen max-h-screen w-full space-y-4 overflow-auto bg-black p-4">
+      <TitleBar
+        onRewind={onRewind}
+        onPreviousCharacter={onPreviousCharacter}
+        onPlayToggle={onPlayToggle}
+        onNextCharacter={onNextCharacter}
+        onFastForward={onFastForward}
+        onMuteToggle={onMuteToggle}
+        isMuted={isMuted}
+        isPlaying={isPlaying}
+      />
 
-      <div className="flex justify-between items-start gap-8">
-        {/* Left side characters */}
-        <div className="flex-1">
-          <div className="grid grid-cols-2 gap-4">
-            {characters.slice(0, Math.floor(characters.length/2)).map((char, index) => (
-              <div 
-                key={index}
-                onClick={() => setCurrentIndex(index)}
-                className={`flex flex-col items-center p-4 rounded-lg cursor-pointer transition-all
-                  ${currentIndex === index ? 'bg-blue-600' : 'bg-gray-800 hover:bg-gray-700'}`}
-              >
-                <div className="w-20 h-20 rounded-full bg-gray-600 mb-2">
-                  {char.avatar && <Image src={char.avatar} alt={char.name} width={80} height={80} className="w-full h-full rounded-full object-cover" />}
-                </div>
-                <span className="text-sm font-medium">{char.name}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Center current character */}
-        <div className="flex-[2] flex flex-col items-center">
-          {currentCharacter && (
-            <div className="flex flex-col items-center">
-              <div className="w-48 h-48 rounded-full bg-gray-600 mb-4">
-                {currentCharacter.avatar && (
-                  <Image src={currentCharacter.avatar} alt={currentCharacter.name} width={192} height={192} className="w-full h-full rounded-full object-cover" />
-                )}
-              </div>
-              <h2 className="text-2xl font-bold mb-4">{currentCharacter.name}</h2>
-              <p className="text-center text-gray-300 mb-8">{currentCharacter.introduction}</p>
-              <button
-                onClick={handleNextCharacter}
-                disabled={isPlaying}
-                className={`px-6 py-3 rounded-lg bg-blue-600 hover:bg-blue-700 transition-colors 
-                  ${isPlaying ? 'opacity-50 cursor-not-allowed' : ''}`}
-              >
-                {currentIndex < characters.length - 1 ? 'Next Character' : 'Start Game'}
-              </button>
-            </div>
-          )}
-        </div>
-
-        {/* Right side characters */}
-        <div className="flex-1">
-          <div className="grid grid-cols-2 gap-4">
-            {characters.slice(Math.floor(characters.length/2)).map((char, index) => (
-              <div 
-                key={index + Math.floor(characters.length/2)}
-                onClick={() => setCurrentIndex(index + Math.floor(characters.length/2))}
-                className={`flex flex-col items-center p-4 rounded-lg cursor-pointer transition-all
-                  ${currentIndex === index + Math.floor(characters.length/2) ? 'bg-blue-600' : 'bg-gray-800 hover:bg-gray-700'}`}
-              >
-                <div className="w-20 h-20 rounded-full bg-gray-600 mb-2">
-                  {char.avatar && <Image src={char.avatar} alt={char.name} width={80} height={80} className="w-full h-full rounded-full object-cover" />}
-                </div>
-                <span className="text-sm font-medium">{char.name}</span>
-              </div>
-            ))}
-          </div>
-        </div> 
+      {/* Video Area */}
+      <div className="flex h-[300px] w-full items-center justify-center rounded-lg border border-[var(--neon-green)]">
+        1376 x 532
       </div>
-    </motion.div>
+
+      {/* Dialogue Section */}
+      <div className="flex border border-[var(--neon-green)] rounded-lg p-8">
+        {/* Character Avatar */}
+        <div className="mr-4 h-24 w-24 border border-green-500 bg-gray-800" />
+
+        {/* Text Area */}
+        <div className="max-h-28 flex-1 overflow-y-auto pr-2">
+          <p className="text-green-500">
+            <span className="font-bold text-green-400">{'{Character_Name}'}:</span>
+            <br />
+            Lorem ipsum dolor sit amet consectetur. Elementum amet orci quam senectus pulvinar dolor
+            orci erat. Consectetur dictum ullamcorper eget in. Sit eu phasellus iaculis molestie
+            nullam phasellus et. Aenean eget et facilisi.
+          </p>
+        </div>
+      </div>
+    </div>
   );
 };
 
-export default IntroductionPhase; 
+export default IntroductionPhase;
