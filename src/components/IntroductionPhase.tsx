@@ -1,13 +1,7 @@
 //modules
-import Image from 'next/image';
-//assets
-import GameIcon from '@/assets/game_icon.svg';
-import ForwardIcon from '@/assets/forward.svg';
-import FastForwardIcon from '@/assets/fast_forward.svg';
-import MuteIcon from '@/assets/mute.svg';
-import UnmuteIcon from '@/assets/unmute.svg';
-import PlayIcon from '@/assets/play.svg';
-import PauseIcon from '@/assets/pause.svg';
+import React from 'react';
+//components
+import TitleBar from './ui/TitleBar';
 //types
 import { Character } from '@/types/character';
 
@@ -22,41 +16,46 @@ interface IntroductionPhaseProps {
 const IntroductionPhase = (props: IntroductionPhaseProps) => {
   const { characters, isMuted, isPlaying, onMuteToggle, onPlayToggle } = props;
   console.log(characters); /// will remove this, just for testing
+
+  const [currentCharacterIndex, setCurrentCharacterIndex] = React.useState<number>(0);
+  const currentCharacter = React.useMemo(
+    () => characters[currentCharacterIndex],
+    [characters, currentCharacterIndex]
+  );
+
+  const onNextCharacter = () => {
+    setCurrentCharacterIndex((prevIndex) => (prevIndex + 1) % characters.length);
+  };
+
+  const onPreviousCharacter = () => {
+    setCurrentCharacterIndex(
+      (prevIndex) => (prevIndex - 1 + characters.length) % characters.length
+    );
+  };
+
+  const onFastForward = () => {
+    setCurrentCharacterIndex(characters.length - 1);
+  };
+
+  const onRewind = () => {
+    setCurrentCharacterIndex(0);
+  };
+
   return (
     <div className="h-screen max-h-screen w-full space-y-4 overflow-auto bg-black p-4">
-      {/* Title Bar */}
-      <div className="flex items-center gap-8">
-        <Image src={GameIcon} alt="Game Icon" width={68} height={56} />
-
-        <span className="flex h-full flex-1 items-center rounded-lg border border-[var(--neon-green)] p-3 font-['Press_Start_2P'] text-lg">
-          Welcome To Sentient Struggle
-        </span>
-
-        {/* Controls */}
-        <div className="flex items-center space-x-2">
-          <button className="rotate-180">
-            <Image src={FastForwardIcon} alt="Fast Forward" height={26} />
-          </button>
-          <button className="rotate-180">
-            <Image src={ForwardIcon} alt="Forward" height={26} />
-          </button>
-          <button onClick={onPlayToggle}>
-            <Image src={isPlaying ? PauseIcon : PlayIcon} alt="Play" height={26} />
-          </button>
-          <button>
-            <Image src={ForwardIcon} alt="Forward" height={26} />
-          </button>
-          <button>
-            <Image src={FastForwardIcon} alt="Fast Forward" height={26} />
-          </button>
-          <button onClick={onMuteToggle}>
-            <Image src={isMuted ? MuteIcon : UnmuteIcon} alt="Mute" height={26} />
-          </button>
-        </div>
-      </div>
+      <TitleBar
+        onRewind={onRewind}
+        onPreviousCharacter={onPreviousCharacter}
+        onPlayToggle={onPlayToggle}
+        onNextCharacter={onNextCharacter}
+        onFastForward={onFastForward}
+        onMuteToggle={onMuteToggle}
+        isMuted={isMuted}
+        isPlaying={isPlaying}
+      />
 
       {/* Video Area */}
-      <div className="flex h-[300px] w-full items-center justify-center border-2 border-cyan-400 text-sm text-cyan-400">
+      <div className="flex h-[300px] w-full items-center justify-center rounded-lg border border-[var(--neon-green)]">
         1376 x 532
       </div>
 
