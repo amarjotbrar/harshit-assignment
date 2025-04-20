@@ -1,7 +1,7 @@
 //modules
 import React from 'react';
 //components
-import TitleBar from './ui/TitleBar';
+import TitleBar from '../ui/TitleBar';
 //types
 import { Character } from '@/types/character';
 
@@ -15,7 +15,7 @@ interface IntroductionPhaseProps {
 
 const IntroductionPhase = (props: IntroductionPhaseProps) => {
   const { characters, isMuted, isPlaying, onMuteToggle, onPlayToggle } = props;
-  
+
   const [currentCharacterIndex, setCurrentCharacterIndex] = React.useState<number>(0);
 
   const currentCharacter = React.useMemo(
@@ -63,7 +63,7 @@ const IntroductionPhase = (props: IntroductionPhaseProps) => {
       </div>
 
       {/* Dialogue Section */}
-      <div className="flex border border-[var(--neon-green)] rounded-lg p-8">
+      <div className="flex rounded-lg border border-[var(--neon-green)] p-8">
         {/* Character Avatar */}
         <div className="mr-4 h-24 w-24 border border-green-500 bg-gray-800" />
 
