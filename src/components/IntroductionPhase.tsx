@@ -13,10 +13,14 @@ import { Character } from '@/types/character';
 
 interface IntroductionPhaseProps {
   characters: Character[];
+  isMuted: boolean;
+  isPlaying: boolean;
+  onMuteToggle: () => void;
+  onPlayToggle: () => void;
 }
 
 const IntroductionPhase = (props: IntroductionPhaseProps) => {
-  const { characters } = props;
+  const { characters, isMuted, isPlaying, onMuteToggle, onPlayToggle } = props;
   console.log(characters); /// will remove this, just for testing
   return (
     <div className="h-screen max-h-screen w-full space-y-4 overflow-auto bg-black p-4">
@@ -36,14 +40,17 @@ const IntroductionPhase = (props: IntroductionPhaseProps) => {
           <button className="rotate-180">
             <Image src={ForwardIcon} alt="Forward" height={26} />
           </button>
-          <button>
-            <Image src={PlayIcon} alt="Play" height={26} />
+          <button onClick={onPlayToggle}>
+            <Image src={isPlaying ? PauseIcon : PlayIcon} alt="Play" height={26} />
           </button>
           <button>
             <Image src={ForwardIcon} alt="Forward" height={26} />
           </button>
           <button>
             <Image src={FastForwardIcon} alt="Fast Forward" height={26} />
+          </button>
+          <button onClick={onMuteToggle}>
+            <Image src={isMuted ? MuteIcon : UnmuteIcon} alt="Mute" height={26} />
           </button>
         </div>
       </div>

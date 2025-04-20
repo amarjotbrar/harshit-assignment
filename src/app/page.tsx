@@ -20,6 +20,8 @@ export default function Home() {
   const [gameplayTranscript, setGameplayTranscript] = useState<TranscriptItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isMuted, setIsMuted] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
 
   // Fetch data on mount
   useEffect(() => {
@@ -56,6 +58,14 @@ export default function Home() {
   //   setPhase('gameplay');
   // };
 
+  const toggleMute = () => {
+    setIsMuted(prevState => !prevState);
+  }
+
+  const togglePlay = () => {
+    setIsPlaying(prevState => !prevState);
+  }
+
   // Show loading state
   if (loading) {
     return (
@@ -91,6 +101,10 @@ export default function Home() {
           <IntroductionPhase
             key="introduction"
             characters={characters}
+            isMuted={isMuted}
+            isPlaying={isPlaying}
+            onMuteToggle={toggleMute}
+            onPlayToggle={togglePlay}
             // onComplete={handleIntroductionComplete}
           />
         )}
