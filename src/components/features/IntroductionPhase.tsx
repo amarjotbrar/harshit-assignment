@@ -27,13 +27,11 @@ const IntroductionPhase = (props: IntroductionPhaseProps) => {
   );
 
   const onNextCharacter = () => {
-    setCurrentCharacterIndex((prevIndex) => (prevIndex + 1) % characters.length);
+    setCurrentCharacterIndex((prevIndex) => Math.min(prevIndex + 1, characters.length - 1));
   };
 
   const onPreviousCharacter = () => {
-    setCurrentCharacterIndex(
-      (prevIndex) => (prevIndex - 1 + characters.length) % characters.length
-    );
+    setCurrentCharacterIndex((prevIndex) => Math.max(0, prevIndex - 1));
   };
 
   const onFastForward = () => {
@@ -58,9 +56,7 @@ const IntroductionPhase = (props: IntroductionPhaseProps) => {
       />
 
       {/* Video Area */}
-      <div className="flex flex-1 w-full items-center justify-center rounded-lg border border-[var(--neon-green)]">
-        1376 x 532
-      </div>
+      <div className="flex w-full flex-1 items-center justify-around rounded-lg border border-[var(--neon-green)]"></div>
 
       {/* Dialogue Section */}
       <div className="flex rounded-lg border border-[var(--neon-green)] p-8">
@@ -68,12 +64,12 @@ const IntroductionPhase = (props: IntroductionPhaseProps) => {
         <Image
           src={CHARACTER_AVATAR_MAP[currentCharacter.name]}
           alt={currentCharacter.name}
-          className="mr-8 h-64 w-64 border border-[var(--neon-green)] rounded-lg p-2"
+          className="mr-8 h-64 w-64 rounded-lg border border-[var(--neon-green)] p-2"
         />
 
         {/* Text Area */}
         <div className="max-h-64 flex-1 overflow-y-auto pr-2">
-          <span className="font-['Press_Start_2P'] text-md">{currentCharacter.name}:</span>
+          <span className="text-md font-['Press_Start_2P']">{currentCharacter.name}:</span>
           <br />
           <p className="font-['Press_Start_2P'] text-sm">{currentCharacter.introduction}</p>
         </div>
