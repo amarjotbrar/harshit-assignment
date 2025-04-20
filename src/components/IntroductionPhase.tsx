@@ -15,13 +15,16 @@ interface IntroductionPhaseProps {
 
 const IntroductionPhase = (props: IntroductionPhaseProps) => {
   const { characters, isMuted, isPlaying, onMuteToggle, onPlayToggle } = props;
-  console.log(characters); /// will remove this, just for testing
-
+  
   const [currentCharacterIndex, setCurrentCharacterIndex] = React.useState<number>(0);
+
   const currentCharacter = React.useMemo(
     () => characters[currentCharacterIndex],
     [characters, currentCharacterIndex]
   );
+
+  console.log(characters); /// will remove this, just for testing
+  console.log(currentCharacter); /// will remove this, just for testing
 
   const onNextCharacter = () => {
     setCurrentCharacterIndex((prevIndex) => (prevIndex + 1) % characters.length);
@@ -60,7 +63,7 @@ const IntroductionPhase = (props: IntroductionPhaseProps) => {
       </div>
 
       {/* Dialogue Section */}
-      <div className="flex border border-green-500 p-2">
+      <div className="flex border border-[var(--neon-green)] rounded-lg p-8">
         {/* Character Avatar */}
         <div className="mr-4 h-24 w-24 border border-green-500 bg-gray-800" />
 
