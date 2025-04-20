@@ -68,7 +68,7 @@ const IntroductionPhase = (props: IntroductionPhaseProps) => {
         <Image
           src={CHARACTER_AVATAR_MAP[currentCharacter.name]}
           alt={currentCharacter.name}
-          className="mr-4 h-64 w-64 border border-[var(--neon-green)] rounded-lg p-2"
+          className="mr-8 h-64 w-64 border border-[var(--neon-green)] rounded-lg p-2"
         />
 
         {/* Text Area */}
