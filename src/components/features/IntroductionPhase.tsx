@@ -1,9 +1,12 @@
 //modules
 import React from 'react';
+import Image from 'next/image';
 //components
 import TitleBar from '../ui/TitleBar';
 //types
 import { Character } from '@/types/character';
+//constants
+import { CHARACTER_AVATAR_MAP } from '@/constants/character';
 
 interface IntroductionPhaseProps {
   characters: Character[];
@@ -62,7 +65,11 @@ const IntroductionPhase = (props: IntroductionPhaseProps) => {
       {/* Dialogue Section */}
       <div className="flex rounded-lg border border-[var(--neon-green)] p-8">
         {/* Character Avatar */}
-        <div className="mr-4 h-64 w-64 border border-[var(--neon-green)] rounded-lg" />
+        <Image
+          src={CHARACTER_AVATAR_MAP[currentCharacter.name]}
+          alt={currentCharacter.name}
+          className="mr-4 h-64 w-64 border border-[var(--neon-green)] rounded-lg p-2"
+        />
 
         {/* Text Area */}
         <div className="max-h-64 flex-1 overflow-y-auto pr-2">
