@@ -30,6 +30,7 @@ body {
   justify-content: center;
   margin-bottom: 20px;
   position: relative;
+  z-index: 20;
 }
 
 .glass-tile {
@@ -41,6 +42,7 @@ body {
   transform-style: preserve-3d;
   transform-origin: center bottom;
   transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  z-index: 20;
 }
 
 .glass-tile-inner {
@@ -53,6 +55,7 @@ body {
   border: 4px solid #2AFF00;
   box-shadow: 0 0 10px var(--tile-glow);
   transition: all 0.3s ease;
+  z-index: 10;
 }
 
 .glass-tile-reflection {
