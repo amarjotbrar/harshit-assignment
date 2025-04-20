@@ -1,9 +1,12 @@
 //modules
 import React from 'react';
+import Image from 'next/image';
 //components
 import TitleBar from '../ui/TitleBar';
 //types
 import { Character } from '@/types/character';
+//constants
+import { CHARACTER_AVATAR_MAP } from '@/constants/character';
 
 interface IntroductionPhaseProps {
   characters: Character[];
@@ -23,17 +26,12 @@ const IntroductionPhase = (props: IntroductionPhaseProps) => {
     [characters, currentCharacterIndex]
   );
 
-  console.log(characters); /// will remove this, just for testing
-  console.log(currentCharacter); /// will remove this, just for testing
-
   const onNextCharacter = () => {
-    setCurrentCharacterIndex((prevIndex) => (prevIndex + 1) % characters.length);
+    setCurrentCharacterIndex((prevIndex) => Math.min(prevIndex + 1, characters.length - 1));
   };
 
   const onPreviousCharacter = () => {
-    setCurrentCharacterIndex(
-      (prevIndex) => (prevIndex - 1 + characters.length) % characters.length
-    );
+    setCurrentCharacterIndex((prevIndex) => Math.max(0, prevIndex - 1));
   };
 
   const onFastForward = () => {
@@ -45,7 +43,7 @@ const IntroductionPhase = (props: IntroductionPhaseProps) => {
   };
 
   return (
-    <div className="h-screen max-h-screen w-full space-y-4 overflow-auto bg-black p-4">
+    <div className="flex h-screen w-full flex-col space-y-8 overflow-auto bg-black p-8">
       <TitleBar
         onRewind={onRewind}
         onPreviousCharacter={onPreviousCharacter}
@@ -58,24 +56,22 @@ const IntroductionPhase = (props: IntroductionPhaseProps) => {
       />
 
       {/* Video Area */}
-      <div className="flex h-[300px] w-full items-center justify-center rounded-lg border border-[var(--neon-green)]">
-        1376 x 532
-      </div>
+      <div className="flex w-full flex-1 items-center justify-around rounded-lg border border-[var(--neon-green)]"></div>
 
       {/* Dialogue Section */}
       <div className="flex rounded-lg border border-[var(--neon-green)] p-8">
         {/* Character Avatar */}
-        <div className="mr-4 h-24 w-24 border border-green-500 bg-gray-800" />
+        <Image
+          src={CHARACTER_AVATAR_MAP[currentCharacter.name]}
+          alt={currentCharacter.name}
+          className="mr-8 h-64 w-64 rounded-lg border border-[var(--neon-green)] p-2"
+        />
 
         {/* Text Area */}
-        <div className="max-h-28 flex-1 overflow-y-auto pr-2">
-          <p className="text-green-500">
-            <span className="font-bold text-green-400">{'{Character_Name}'}:</span>
-            <br />
-            Lorem ipsum dolor sit amet consectetur. Elementum amet orci quam senectus pulvinar dolor
-            orci erat. Consectetur dictum ullamcorper eget in. Sit eu phasellus iaculis molestie
-            nullam phasellus et. Aenean eget et facilisi.
-          </p>
+        <div className="max-h-64 flex-1 overflow-y-auto pr-2">
+          <span className="text-md font-['Press_Start_2P']">{currentCharacter.name}:</span>
+          <br />
+          <p className="font-['Press_Start_2P'] text-sm">{currentCharacter.introduction}</p>
         </div>
       </div>
     </div>

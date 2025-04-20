@@ -41,23 +41,23 @@ const TitleBar = (props: TitleBarProps) => {
       </span>
 
       {/* Controls */}
-      <div className="flex items-center space-x-2">
-        <button className="rotate-180" onClick={onRewind}>
+      <div className="flex items-center space-x-4">
+        <button className="rotate-180 cursor-pointer" onClick={onRewind}>
           <Image src={FastForwardIcon} alt="Fast Forward" height={26} />
         </button>
-        <button className="rotate-180" onClick={onPreviousCharacter}>
+        <button className="rotate-180 cursor-pointer" onClick={onPreviousCharacter}>
           <Image src={ForwardIcon} alt="Forward" height={26} />
         </button>
-        <button onClick={onPlayToggle}>
+        <button className="cursor-pointer" onClick={onPlayToggle}>
           <Image src={isPlaying ? PauseIcon : PlayIcon} alt="Play" height={26} />
         </button>
-        <button onClick={onNextCharacter}>
+        <button className="cursor-pointer" onClick={onNextCharacter}>
           <Image src={ForwardIcon} alt="Forward" height={26} />
         </button>
-        <button onClick={onFastForward}>
+        <button className="cursor-pointer" onClick={onFastForward}>
           <Image src={FastForwardIcon} alt="Fast Forward" height={26} />
         </button>
-        <button onClick={onMuteToggle}>
+        <button className="cursor-pointer" onClick={onMuteToggle}>
           <Image src={isMuted ? MuteIcon : UnmuteIcon} alt="Mute" height={26} />
         </button>
       </div>
