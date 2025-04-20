@@ -23,9 +23,6 @@ const IntroductionPhase = (props: IntroductionPhaseProps) => {
     [characters, currentCharacterIndex]
   );
 
-  console.log(characters); /// will remove this, just for testing
-  console.log(currentCharacter); /// will remove this, just for testing
-
   const onNextCharacter = () => {
     setCurrentCharacterIndex((prevIndex) => (prevIndex + 1) % characters.length);
   };
@@ -65,17 +62,13 @@ const IntroductionPhase = (props: IntroductionPhaseProps) => {
       {/* Dialogue Section */}
       <div className="flex rounded-lg border border-[var(--neon-green)] p-8">
         {/* Character Avatar */}
-        <div className="mr-4 h-24 w-24 border border-green-500 bg-gray-800" />
+        <div className="mr-4 h-64 w-64 border border-[var(--neon-green)] rounded-lg" />
 
         {/* Text Area */}
-        <div className="max-h-28 flex-1 overflow-y-auto pr-2">
-          <p className="text-green-500">
-            <span className="font-bold text-green-400">{'{Character_Name}'}:</span>
-            <br />
-            Lorem ipsum dolor sit amet consectetur. Elementum amet orci quam senectus pulvinar dolor
-            orci erat. Consectetur dictum ullamcorper eget in. Sit eu phasellus iaculis molestie
-            nullam phasellus et. Aenean eget et facilisi.
-          </p>
+        <div className="flex-1 overflow-y-auto pr-2">
+          <span className="font-['Press_Start_2P'] text-md">{currentCharacter.name}:</span>
+          <br />
+          <p className="font-['Press_Start_2P'] text-sm">{currentCharacter.introduction}</p>
         </div>
       </div>
     </div>
