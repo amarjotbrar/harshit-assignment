@@ -42,7 +42,7 @@ const IntroductionPhase = (props: IntroductionPhaseProps) => {
   };
 
   return (
-    <div className="flex h-screen w-full flex-col space-y-4 overflow-auto bg-black p-4">
+    <div className="flex h-screen w-full flex-col space-y-8 overflow-auto bg-black p-8">
       <TitleBar
         onRewind={onRewind}
         onPreviousCharacter={onPreviousCharacter}
@@ -65,7 +65,7 @@ const IntroductionPhase = (props: IntroductionPhaseProps) => {
         <div className="mr-4 h-64 w-64 border border-[var(--neon-green)] rounded-lg" />
 
         {/* Text Area */}
-        <div className="flex-1 overflow-y-auto pr-2">
+        <div className="max-h-64 flex-1 overflow-y-auto pr-2">
           <span className="font-['Press_Start_2P'] text-md">{currentCharacter.name}:</span>
           <br />
           <p className="font-['Press_Start_2P'] text-sm">{currentCharacter.introduction}</p>
