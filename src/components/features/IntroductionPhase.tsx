@@ -42,7 +42,7 @@ const IntroductionPhase = (props: IntroductionPhaseProps) => {
   };
 
   return (
-    <div className="h-screen max-h-screen w-full space-y-4 overflow-auto bg-black p-4">
+    <div className="flex h-screen w-full flex-col space-y-4 overflow-auto bg-black p-4">
       <TitleBar
         onRewind={onRewind}
         onPreviousCharacter={onPreviousCharacter}
@@ -55,7 +55,7 @@ const IntroductionPhase = (props: IntroductionPhaseProps) => {
       />
 
       {/* Video Area */}
-      <div className="flex h-[300px] w-full items-center justify-center rounded-lg border border-[var(--neon-green)]">
+      <div className="flex flex-1 w-full items-center justify-center rounded-lg border border-[var(--neon-green)]">
         1376 x 532
       </div>
 
