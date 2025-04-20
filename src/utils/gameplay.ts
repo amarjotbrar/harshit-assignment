@@ -1,22 +1,39 @@
-import { TranscriptItem, GameStateMessageData } from '@/types/transcript';
+import { TranscriptItem, GameStateMessageData, IntroductionMessageData } from '@/types/transcript';
 import { Direction } from '@/types';
 import { Character } from '@/types/character';
 
 // Process transcript to extract character data for introduction phase
-export const extractCharacters = (transcript: TranscriptItem[]): Character[] => {
-  const agentOrderMessage = transcript.find((item) => item.id === 1165)
-    ?.message_data as GameStateMessageData;
+export const extractCharacters = (data: TranscriptItem[]): Character[] => {
+  const characters: Character[] = [];
 
-  const orderedCharacters = Object.entries(agentOrderMessage.agent_order)
-    .sort((a, b) => a[1] - b[1])
-    .map(([name]) => ({
-      name,
-      introduction: `This is ${name}'s introduction.`,
-      avatar: `https://placehold.co/600x400`,
-      isAlive: true,
-    }));
+  for (const message of data) {
+    // Stop when we hit the system message with all_acknowledged = true
+    if (
+      message.agent_id === 'system' &&
+      'all_acknowledged' in message.message_data &&
+      message.message_data.all_acknowledged === true
+    ) {
+      break;
+    }
 
-  return orderedCharacters;
+    // Filter only the valid character entries
+    if (
+      message.round_number === 1 &&
+      message.message_type === 'response' &&
+      message.agent_id !== 'system' &&
+      'agent_name' in message.message_data &&
+      'introduction' in message.message_data
+    ) {
+      const introData = message.message_data as IntroductionMessageData;
+      characters.push({
+        name: introData.agent_name || message.agent_id,
+        introduction: introData.introduction,
+        isAlive: true,
+      });
+    }
+  }
+
+  return characters;
 };
 
 // Process the gameplay transcript to determine safe and unsafe tiles

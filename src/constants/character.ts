@@ -1,7 +1,10 @@
-export const CHARACTER_AVATAR_MAP = {
-  "1": "/images/characters/avatar_1.png",
-  "2": "/images/characters/avatar_2.png",
-  "3": "/images/characters/avatar_3.png",
-  "4": "/images/characters/avatar_4.png",
-  "5": "/images/characters/avatar_5.png",
+export const CHARACTER_AVATAR_MAP: Record<string, string> = {
+  Grokonomist: 'some string',
+  Qwenaissance: 'some string',
+  ChadGPT: 'some string',
+  Cluedence: 'some string',
+  DeepShit: 'some string',
+  Geminigma: 'some string',
+  Mistroll: 'some string',
+  Llamarchy: 'some string',
 };
