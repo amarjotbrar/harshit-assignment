@@ -1,31 +1,21 @@
-import { motion } from 'framer-motion';
-import { Character as CharacterType } from '../types';
 import Image from 'next/image';
+import { Character as CharacterType } from '../types';
 
 interface CharacterProps {
   character: CharacterType;
-  isActive: boolean;
-  onComplete?: () => void;
 }
 
-const Character = ({ character, isActive, onComplete }: CharacterProps) => {
-  const defaultAvatarUrl = '/default-avatar.png'; // Add a default avatar image to public folder
-
+const Character = ({ character }: CharacterProps) => {
   return (
-    <motion.div
-      className={`flex flex-col items-center ${isActive ? 'opacity-100' : 'opacity-50'}`}
-      initial={{ opacity: 0, y: 50 }}
-      animate={isActive ? { opacity: 1, y: 0 } : { opacity: 0.5, y: 0 }}
-      transition={{ duration: 0.5 }}
-      onAnimationComplete={isActive ? onComplete : undefined}
-    >
-      <div className="relative w-24 h-24 mb-4 rounded-full overflow-hidden border-4 border-gray-800">
+    <div className="flex flex-col items-center p-4 bg-gray-800 rounded-lg">
+      <div className="w-24 h-24 rounded-full overflow-hidden mb-3">
         {character.avatar ? (
           <Image 
             src={character.avatar} 
             alt={character.name} 
-            fill
-            className="object-cover"
+            width={96}
+            height={96}
+            className="w-full h-full object-cover"
           />
         ) : (
           <div className="bg-gray-300 w-full h-full flex items-center justify-center text-gray-600 text-xl font-bold">
@@ -33,27 +23,10 @@ const Character = ({ character, isActive, onComplete }: CharacterProps) => {
           </div>
         )}
       </div>
-      
-      <motion.h3
-        className="text-xl font-bold mb-2"
-        initial={{ opacity: 0 }}
-        animate={isActive ? { opacity: 1 } : { opacity: 0.5 }}
-        transition={{ delay: 0.2, duration: 0.3 }}
-      >
+      <h3 className="text-lg font-medium text-white">
         {character.name}
-      </motion.h3>
-      
-      {isActive && (
-        <motion.p
-          className="text-center max-w-md"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.4, duration: 0.3 }}
-        >
-          {character.introduction}
-        </motion.p>
-      )}
-    </motion.div>
+      </h3>
+    </div>
   );
 };
 

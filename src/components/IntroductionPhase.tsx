@@ -1,111 +1,60 @@
 //modules
 import Image from 'next/image';
-import { motion } from 'framer-motion';
-//hooks 
-import useTTS from '@/hooks/useTTS';
-import { useState, useEffect } from 'react';
+//assets
+import GameIcon from "@/assets/GameIcon.svg";
 //types
-import { Character as CharacterType } from '@/types/character';
+import { Character } from "@/types/character";
 
 interface IntroductionPhaseProps {
-  characters: CharacterType[];
-  onComplete: () => void;
+  characters: Character[];
 }
 
-const IntroductionPhase = ({ characters, onComplete }: IntroductionPhaseProps) => {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const { speak, isPlaying } = useTTS();
-  
-  const currentCharacter = characters[currentIndex];
-  
-  useEffect(() => {
-    if (currentCharacter) {
-      const introText = `${currentCharacter.name} says: ${currentCharacter.introduction}`;
-      speak(introText);
-    }
-  }, [currentIndex, currentCharacter, speak]);
-  
-  const handleNextCharacter = () => {
-    if (currentIndex < characters.length - 1) {
-      setCurrentIndex(prevIndex => prevIndex + 1);
-    } else {
-      onComplete();
-    }
-  };
-  
+const IntroductionPhase = (props: IntroductionPhaseProps) => {
+  const { characters } = props;
+  console.log(characters);/// will remove this, just for testing
   return (
-    <motion.div 
-      className="flex flex-col min-h-screen bg-gray-900 text-white p-4"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-    >
-      <h1 className="text-3xl font-bold mb-10 text-center">Character Introductions</h1>
+      <div className="bg-black w-full h-screen max-h-screen overflow-auto p-4 space-y-4">
+        {/* Title Bar */}
+        <div className="flex items-center p-2 gap-8">
+            <Image 
+              src={GameIcon} 
+              alt="Game Icon"
+              width={68}
+              height={56}
+            />
+        
+          <span className="flex-1 text-lg font-bold border border-green-500 h-full flex items-center">Welcome To Sentient Struggle</span>
 
-      <div className="flex justify-between items-start gap-8">
-        {/* Left side characters */}
-        <div className="flex-1">
-          <div className="grid grid-cols-2 gap-4">
-            {characters.slice(0, Math.floor(characters.length/2)).map((char, index) => (
-              <div 
-                key={index}
-                onClick={() => setCurrentIndex(index)}
-                className={`flex flex-col items-center p-4 rounded-lg cursor-pointer transition-all
-                  ${currentIndex === index ? 'bg-blue-600' : 'bg-gray-800 hover:bg-gray-700'}`}
-              >
-                <div className="w-20 h-20 rounded-full bg-gray-600 mb-2">
-                  {char.avatar && <Image src={char.avatar} alt={char.name} width={80} height={80} className="w-full h-full rounded-full object-cover" />}
-                </div>
-                <span className="text-sm font-medium">{char.name}</span>
-              </div>
-            ))}
+          {/* Controls */}
+          <div className="flex items-center space-x-2">
+            <button className="border border-green-500 px-2 py-1">⏸</button>
+            <button className="border border-green-500 px-2 py-1">▶️</button>
+            <button className="border border-green-500 px-2 py-1">🔊</button>
           </div>
         </div>
 
-        {/* Center current character */}
-        <div className="flex-[2] flex flex-col items-center">
-          {currentCharacter && (
-            <div className="flex flex-col items-center">
-              <div className="w-48 h-48 rounded-full bg-gray-600 mb-4">
-                {currentCharacter.avatar && (
-                  <Image src={currentCharacter.avatar} alt={currentCharacter.name} width={192} height={192} className="w-full h-full rounded-full object-cover" />
-                )}
-              </div>
-              <h2 className="text-2xl font-bold mb-4">{currentCharacter.name}</h2>
-              <p className="text-center text-gray-300 mb-8">{currentCharacter.introduction}</p>
-              <button
-                onClick={handleNextCharacter}
-                disabled={isPlaying}
-                className={`px-6 py-3 rounded-lg bg-blue-600 hover:bg-blue-700 transition-colors 
-                  ${isPlaying ? 'opacity-50 cursor-not-allowed' : ''}`}
-              >
-                {currentIndex < characters.length - 1 ? 'Next Character' : 'Start Game'}
-              </button>
-            </div>
-          )}
+        {/* Video Area */}
+        <div className="border-2 border-cyan-400 h-[300px] w-full flex items-center justify-center text-cyan-400 text-sm">
+          1376 x 532
         </div>
 
-        {/* Right side characters */}
-        <div className="flex-1">
-          <div className="grid grid-cols-2 gap-4">
-            {characters.slice(Math.floor(characters.length/2)).map((char, index) => (
-              <div 
-                key={index + Math.floor(characters.length/2)}
-                onClick={() => setCurrentIndex(index + Math.floor(characters.length/2))}
-                className={`flex flex-col items-center p-4 rounded-lg cursor-pointer transition-all
-                  ${currentIndex === index + Math.floor(characters.length/2) ? 'bg-blue-600' : 'bg-gray-800 hover:bg-gray-700'}`}
-              >
-                <div className="w-20 h-20 rounded-full bg-gray-600 mb-2">
-                  {char.avatar && <Image src={char.avatar} alt={char.name} width={80} height={80} className="w-full h-full rounded-full object-cover" />}
-                </div>
-                <span className="text-sm font-medium">{char.name}</span>
-              </div>
-            ))}
+        {/* Dialogue Section */}
+        <div className="border border-green-500 p-2 flex">
+          {/* Character Avatar */}
+          <div className="w-24 h-24 bg-gray-800 border border-green-500 mr-4" />
+
+          {/* Text Area */}
+          <div className="flex-1 overflow-y-auto max-h-28 pr-2">
+            <p className="text-green-500">
+              <span className="font-bold text-green-400">{'{Character_Name}'}:</span><br />
+              Lorem ipsum dolor sit amet consectetur. Elementum amet orci quam senectus pulvinar dolor orci erat. 
+              Consectetur dictum ullamcorper eget in. Sit eu phasellus iaculis molestie nullam phasellus et. 
+              Aenean eget et facilisi.
+            </p>
           </div>
-        </div> 
+        </div>
       </div>
-    </motion.div>
   );
-};
+}
 
-export default IntroductionPhase; 
+export default IntroductionPhase;

@@ -4,8 +4,6 @@ import { useState, useEffect } from 'react';
 import { AnimatePresence } from 'framer-motion';
 //components
 import IntroductionPhase from '@/components/IntroductionPhase';
-// import GameplayPhase from '@/components/GameplayPhase';
-// import ResultsPhase from '@/components/ResultsPhase';
 //utils
 import { extractCharacters } from '@/utils/gameplay';
 //types
@@ -52,20 +50,8 @@ export default function Home() {
   console.log(gameplayTranscript);/////////////////////////////////////////////////Need to remove this
 
   // Handle phase transitions
-  const handleIntroductionComplete = () => {
-    setPhase('gameplay');
-  };
-
-  // const handleGameplayComplete = () => {
-  //   setPhase('results');
-  // };
-
-  // const handleRestart = () => {
-  //   // Reset character states
-  //   setCharacters(prevCharacters => 
-  //     prevCharacters.map(char => ({ ...char, isAlive: true }))
-  //   );
-  //   setPhase('introduction');
+  // const handleIntroductionComplete = () => {
+  //   setPhase('gameplay');
   // };
 
   // Show loading state
@@ -103,26 +89,9 @@ export default function Home() {
           <IntroductionPhase 
             key="introduction"
             characters={characters}
-            onComplete={handleIntroductionComplete}
+            // onComplete={handleIntroductionComplete}
           />
         )}
-        
-        {/* {phase === 'gameplay' && (
-          <GameplayPhase 
-            key="gameplay"
-            characters={characters}
-            gameplayTranscript={gameplayTranscript}
-            onComplete={handleGameplayComplete}
-          />
-        )}
-        
-        {phase === 'results' && (
-          <ResultsPhase 
-            key="results"
-            characters={characters}
-            onRestart={handleRestart}
-          />
-        )} */}
       </AnimatePresence>
     </main>
   );
