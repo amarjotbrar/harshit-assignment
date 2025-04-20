@@ -6,14 +6,14 @@ import { cn } from "../lib/utils"
 interface GlassTileProps {
   status: "unselected" | "correct" | "wrong" | "current"
   isBreaking: boolean
-  onClick: () => void
+  // onClick: () => void
 }
 
-const GlassTile = forwardRef<HTMLDivElement, GlassTileProps>(({ status, isBreaking, onClick }, ref) => {
+const GlassTile = forwardRef<HTMLDivElement, GlassTileProps>(({ status, isBreaking }, ref) => {
   return (
     <div
       ref={ref}
-      onClick={onClick}
+      // onClick={onClick}
       className={cn(
         "glass-tile",
         status === "unselected" && "glass-tile-unselected",

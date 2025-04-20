@@ -7,6 +7,7 @@ import TitleBar from '../ui/TitleBar';
 import { Character } from '@/types/character';
 //constants
 import { CHARACTER_AVATAR_MAP } from '@/constants/character';
+import GlassBridgeGame from '../glass-bridge-game';
 
 interface IntroductionPhaseProps {
   characters: Character[];
@@ -56,7 +57,9 @@ const IntroductionPhase = (props: IntroductionPhaseProps) => {
       />
 
       {/* Video Area */}
-      <div className="flex w-full flex-1 items-center justify-around rounded-lg border border-[var(--neon-green)]"></div>
+      <div className="flex w-full flex-1 items-center justify-around rounded-lg border border-[var(--neon-green)]">
+        <GlassBridgeGame />
+      </div>
 
       {/* Dialogue Section */}
       <div className="flex rounded-lg border border-[var(--neon-green)] p-8">
@@ -64,14 +67,14 @@ const IntroductionPhase = (props: IntroductionPhaseProps) => {
         <Image
           src={CHARACTER_AVATAR_MAP[currentCharacter.name]}
           alt={currentCharacter.name}
-          className="mr-8 h-64 w-64 rounded-lg border border-[var(--neon-green)] p-2"
+          className="mr-8 max-h-64 w-64 rounded-lg border border-[var(--neon-green)] p-2"
         />
 
         {/* Text Area */}
         <div className="max-h-64 flex-1 overflow-y-auto pr-2">
-          <span className="text-md font-['Press_Start_2P']">{currentCharacter.name}:</span>
+          <span className="text-sm font-['Press_Start_2P']">{currentCharacter.name}:</span>
           <br />
-          <p className="font-['Press_Start_2P'] text-sm">{currentCharacter.introduction}</p>
+          <p className="font-['Press_Start_2P'] text-xs">{currentCharacter.introduction}</p>
         </div>
       </div>
     </div>

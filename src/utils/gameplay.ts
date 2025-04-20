@@ -36,6 +36,26 @@ export const extractCharacters = (data: TranscriptItem[]): Character[] => {
   return characters;
 };
 
+// Process transcript to extract `id`, `agent_id`, and `message_data`
+export const extractIdAgentMessageData = (data: TranscriptItem[]) => {
+  const extractedData = [];
+
+  for (const message of data) {
+    // Extract relevant fields
+    const { id, agent_id, message_data } = message;
+    
+    // Store only necessary fields: id, agent_id, and message_data
+    extractedData.push({
+      id,
+      agent_id,
+      message_data,
+    });
+  }
+
+  return extractedData;
+};
+
+
 // Process the gameplay transcript to determine safe and unsafe tiles
 export const processBridgeTiles = (
   gameplayTranscript: TranscriptItem[]
@@ -43,7 +63,7 @@ export const processBridgeTiles = (
   left: boolean[];
   right: boolean[];
 } => {
-  const bridgeLength = 18; // Based on the Figma design
+  const bridgeLength = 16; // Based on the Figma design
   const leftTiles: boolean[] = Array(bridgeLength).fill(false);
   const rightTiles: boolean[] = Array(bridgeLength).fill(false);
 

@@ -1,10 +1,12 @@
 "use client"
 
-import React, { useState, useEffect } from "react"
-import axios from "axios"
-import GameOverModal from "../../components/game-over-modal"
-import VictoryModal from "../../components/victory-modal"
-import GlassTile from "../../components/glass-tile"
+import React from "react"
+
+import { useEffect, useState } from "react"
+import GameOverModal from "./game-over-modal"
+
+import VictoryModal from "./victory-modal"
+import GlassTile from "./glass-tile"
 
 type TileStatus = "unselected" | "correct" | "wrong" | "current"
 
@@ -37,67 +39,15 @@ export default function GlassBridgeGame() {
   const [showShards, setShowShards] = useState(false)
   const [shards, setShards] = useState<ShardProps[]>([])
   const [breakPosition, setBreakPosition] = useState({ left: 0, top: 0 })
-  const [imagePosition, setImagePosition] = useState(0) // Horizontal position of the image
-  const [gameTranscript, setGameTranscript] = useState<any[]>([]);  // Store the fetched game transcript
-  const [transcriptIndex, setTranscriptIndex] = useState(0);  // Keep track of current position in the transcript
 
   const TOTAL_PAIRS = 8
 
-  // Fetch the game transcript from the API
-  const fetchGameTranscript = async () => {
-    try {
-      const response = await axios.get("https://sentient-struggle-season0-ovv7g.ondigitalocean.app/db/games/3c6ffc89-dffc-479b-860e-c4bee92f4f02/conversation?sort_by=timestamp&sort_order=asc&limit=100&offset=0&round_number=2")
-      setGameTranscript(response.data);  // Store the response data
-    } catch (error) {
-      console.error("Error fetching game transcript:", error);
-    }
-  }
-
-  useEffect(() => {
-    fetchGameTranscript();  // Fetch transcript when component loads
-  }, [])
-
-  // Process the transcript data and simulate the game flow
-  useEffect(() => {
-    if (!gameTranscript || gameTranscript.length === 0 || transcriptIndex >= gameTranscript.length) return;
-
-    const currentEntry = gameTranscript[transcriptIndex];
-
-    // Check if the current entry exists and has the correct structure
-    if (!currentEntry || !currentEntry.message_type) {
-      console.error("Invalid transcript entry:", currentEntry); // Debug log for invalid entry
-      setTranscriptIndex(transcriptIndex + 1); // Skip invalid entry and move to the next one
-      return;
-    }
-
-    if (currentEntry.message_type === "response") {
-      const choice = currentEntry.message_data.choice;
-      console.log(`Agent's choice: ${choice}`);  // Debug log for choice
-
-      // Simulate the choice
-      if (choice === "left") {
-        handleTileClick(currentPairIndex * 2);  // Simulate left tile selection
-      } else if (choice === "right") {
-        handleTileClick(currentPairIndex * 2 + 1);  // Simulate right tile selection
-      }
-    } else if (currentEntry.message_type === "game_state") {
-      const { bridge_pattern, attempt_history } = currentEntry.message_data;
-      console.log(`Bridge pattern: ${JSON.stringify(bridge_pattern)}`); // Debug log for the bridge pattern
-    }
-
-    // Move to the next entry in the transcript
-    if (transcriptIndex < gameTranscript.length - 1) {
-      setTranscriptIndex(transcriptIndex + 1);  // Move to the next entry
-    } else {
-      setVictory(true);  // End the game once the transcript is finished
-    }
-  }, [gameTranscript, transcriptIndex])
-
-  // Initialize the game and reset all values
+  // Initialize the game
   const initializeGame = () => {
     const newTiles: Tile[] = []
 
     for (let i = 0; i < TOTAL_PAIRS; i++) {
+      // Randomly decide which tile is tempered (safe)
       const isLeftTempered = Math.random() > 0.5
 
       newTiles.push({
@@ -126,10 +76,51 @@ export default function GlassBridgeGame() {
     setBreakingTileId(null)
     setShowShards(false)
     setShards([])
-    setImagePosition(0) // Reset image position when game starts
   }
 
-  // Handle the tile selection logic
+  // Generate glass shards exactly like in the reference image
+  const generateShards = (tileElement: HTMLDivElement) => {
+    // Get the position of the breaking tile
+    const rect = tileElement.getBoundingClientRect()
+    const containerRect = tileElement.parentElement?.parentElement?.getBoundingClientRect() || { left: 0, top: 0 }
+
+    // Calculate position relative to the bridge container
+    const left = rect.left - containerRect.left + rect.width / 2
+    const top = rect.top - containerRect.top + rect.height / 2 + 50 // Offset to position below the tile
+
+    setBreakPosition({ left, top })
+
+    // Create shards that match the reference image exactly
+    const newShards: ShardProps[] = [
+      // Large triangles
+      { width: 30, height: 40, rotation: 0, left: -20, top: 20, delay: 0 },
+      { width: 35, height: 45, rotation: 30, left: 20, top: 10, delay: 0.05 },
+      { width: 25, height: 35, rotation: -15, left: -40, top: 30, delay: 0.1 },
+
+      // Medium triangles
+      { width: 20, height: 30, rotation: 60, left: 40, top: 30, delay: 0.15 },
+      { width: 22, height: 32, rotation: 120, left: 10, top: 50, delay: 0.2 },
+      { width: 18, height: 28, rotation: 210, left: -30, top: 40, delay: 0.25 },
+
+      // Small triangles
+      { width: 15, height: 20, rotation: 45, left: 30, top: 60, delay: 0.3 },
+      { width: 12, height: 18, rotation: 90, left: -10, top: 70, delay: 0.35 },
+      { width: 10, height: 15, rotation: 150, left: -50, top: 50, delay: 0.4 },
+      { width: 8, height: 12, rotation: 180, left: 50, top: 40, delay: 0.45 },
+
+      // Tiny triangles
+      { width: 6, height: 10, rotation: 240, left: 0, top: 80, delay: 0.5 },
+      { width: 5, height: 8, rotation: 270, left: -20, top: 60, delay: 0.55 },
+      { width: 7, height: 11, rotation: 300, left: 20, top: 70, delay: 0.6 },
+      { width: 9, height: 14, rotation: 330, left: -40, top: 80, delay: 0.65 },
+      { width: 11, height: 16, rotation: 15, left: 40, top: 50, delay: 0.7 },
+      { width: 13, height: 19, rotation: 75, left: -15, top: 90, delay: 0.75 },
+    ]
+
+    setShards(newShards)
+  }
+
+  // Handle tile selection
   const handleTileClick = (tileId: number) => {
     if (gameOver || victory || breakingTileId !== null) return
 
@@ -140,28 +131,44 @@ export default function GlassBridgeGame() {
     const clickedTileIndex = updatedTiles.findIndex((tile) => tile.id === tileId)
 
     if (clickedTile.isTempered) {
+      // Correct tile selected
       updatedTiles[clickedTileIndex].status = "correct"
+
+      // Update the next pair to be current if not the last pair
       if (currentPairIndex < TOTAL_PAIRS - 1) {
         updatedTiles[2 * (currentPairIndex + 1)].status = "current"
         updatedTiles[2 * (currentPairIndex + 1) + 1].status = "current"
         setCurrentPairIndex(currentPairIndex + 1)
       } else {
+        // Player has completed all pairs
         setVictory(true)
       }
+
       setScore(score + 1)
-      if (score + 1 > maxScore) setMaxScore(score + 1)
+      if (score + 1 > maxScore) {
+        setMaxScore(score + 1)
+      }
     } else {
+      // Wrong tile selected
       updatedTiles[clickedTileIndex].status = "wrong"
       setBreakingTileId(tileId)
-      if (clickedTile.ref.current) generateShards(clickedTile.ref.current)
 
+      // Generate and show shards
+      if (clickedTile.ref.current) {
+        generateShards(clickedTile.ref.current)
+      }
+
+      // Show breaking animation
       setTimeout(() => {
         setShowShards(true)
+
+        // After animation, set game over
         setTimeout(() => {
           setGameOver(true)
         }, 2000)
       }, 300)
 
+      // Also reveal the correct tile in the pair
       const otherTileInPair = updatedTiles.find(
         (tile) => tile.id !== tileId && Math.floor(tile.id / 2) === Math.floor(tileId / 2),
       )
@@ -170,48 +177,43 @@ export default function GlassBridgeGame() {
         updatedTiles[otherTileIndex].status = "correct"
       }
     }
+
     setTiles(updatedTiles)
   }
 
-  // Generate glass shards
-  const generateShards = (tileElement: HTMLDivElement) => {
-    const rect = tileElement.getBoundingClientRect()
-    const containerRect = tileElement.parentElement?.parentElement?.getBoundingClientRect() || { left: 0, top: 0 }
-    const left = rect.left - containerRect.left + rect.width / 2
-    const top = rect.top - containerRect.top + rect.height / 2 + 50
-    setBreakPosition({ left, top })
+  // Handle keyboard controls
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!gameStarted || gameOver || victory || breakingTileId !== null) return
 
-    const newShards: ShardProps[] = [
-      { width: 30, height: 40, rotation: 0, left: -20, top: 20, delay: 0 },
-      { width: 35, height: 45, rotation: 30, left: 20, top: 10, delay: 0.05 },
-      { width: 25, height: 35, rotation: -15, left: -40, top: 30, delay: 0.1 },
-    ]
+      if (e.key === "ArrowLeft") {
+        const leftTile = tiles.find((tile) => tile.position === "left" && Math.floor(tile.id / 2) === currentPairIndex)
+        if (leftTile) handleTileClick(leftTile.id)
+      } else if (e.key === "ArrowRight") {
+        const rightTile = tiles.find(
+          (tile) => tile.position === "right" && Math.floor(tile.id / 2) === currentPairIndex,
+        )
+        if (rightTile) handleTileClick(rightTile.id)
+      }
+    }
 
-    setShards(newShards)
-  }
+    window.addEventListener("keydown", handleKeyDown)
+    return () => window.removeEventListener("keydown", handleKeyDown)
+  }, [tiles, currentPairIndex, gameStarted, gameOver, victory, breakingTileId])
 
   return (
-    <div className="relative w-full h-screen flex flex-col items-center justify-center overflow-hidden " style={{ backgroundImage: "url('/background.png')"}}>
+    <div className="relative w-full h-screen flex flex-col items-center justify-center overflow-hidden"   
+     style={{
+        backgroundImage: "url('/background.png')",
+        backgroundSize: "cover",  // Ensures the image covers the area without stretching
+        backgroundPosition: "center",  // Keeps the image centered
+        height: "50vh"  // Sets the height of the background image to 50% of the viewport height
+      }}>
       {/* Background image */}
       <div className="game-background"></div>
 
       {/* Pixelated overlay effect */}
       <div className="pixelated-overlay"></div>
-
-      {/* Display the Geminigma image at the start */}
-      <img
-        src="Geminigma.png"
-        alt="Geminigma"
-        style={{
-          position: "absolute",
-          top: "10%", // Place it just above the tiles
-          left: `calc(50% - 45px)`, // Center horizontally
-          transform: `translateX(${imagePosition}%)`, // Move horizontally based on progress
-          transition: "transform 0.5s ease-out",
-          width: "90px",
-          height: "auto",
-        }}
-      />
 
       {!gameStarted ? (
         <div className="absolute inset-0 flex flex-col items-center justify-center z-10 bg-black/70">
@@ -240,8 +242,9 @@ export default function GlassBridgeGame() {
             </div>
           </div>
 
-          <div className="absolute bottom-[30%] w-full max-w-4xl px-4">
+          <div className="absolute bottom-[17%] w-full max-w-xl px-4" style={{ transform: 'rotateX(30deg)' }}>
             <div className="relative">
+              {/* Bridge tiles */}
               <div className="bridge-container">
                 <div className="bridge-row">
                   {Array.from({ length: TOTAL_PAIRS }).map((_, pairIndex) => {
@@ -251,6 +254,7 @@ export default function GlassBridgeGame() {
                     return leftTile ? (
                       <GlassTile
                         key={`left-${pairIndex}`}
+                        // onClick={() => handleTileClick(leftTile.id)}
                         status={leftTile.status}
                         isBreaking={breakingTileId === leftTile.id}
                         ref={leftTile.ref}
@@ -266,6 +270,7 @@ export default function GlassBridgeGame() {
                     return rightTile ? (
                       <GlassTile
                         key={`right-${pairIndex}`}
+                        // onClick={() => handleTileClick(rightTile.id)}
                         status={rightTile.status}
                         isBreaking={breakingTileId === rightTile.id}
                         ref={rightTile.ref}
